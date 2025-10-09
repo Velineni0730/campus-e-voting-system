@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote - E-Voting System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="js/auth.js"></script>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-gray-800">E-Voting</a>
+            <a href="index.html" class="text-blue-600 hover:underline">Back to Elections</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-10">Cast Your Vote</h1>
+        <div id="positionsList" class="space-y-8">
+            </div>
+    </main>
+
+    <script>
+        const positionsDiv = document.getElementById('positionsList');
+        const electionId = localStorage.getItem('selectedElectionId');
+        const voterId = auth.currentUser ? auth.currentUser.uid : null;
+
+        if (!voterId) {
+            alert("You must be logged in to vote.");
+            window.location.href = "login.html";
+        }
+
+        db.collection("positions").where("electionID", "==", electionId).get().then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                positionsDiv.innerHTML = "<p class='text-center text-gray-600'>No positions available in this election.</p>";
+            }
+            querySnapshot.forEach((doc) => {
+                const position = doc.data();
+                const positionDiv = document.createElement('div');
+                positionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
+                positionDiv.innerHTML = `<h3 class="text-2xl font-bold text-gray-800 mb-4">${position.title}</h3><div id="candidates-${doc.id}" class="flex flex-wrap gap-4"></div>`;
+                positionsDiv.appendChild(positionDiv);
+
+                db.collection("candidates").where("positionID", "==", doc.id).get().then((candidatesSnapshot) => {
+                    const candidatesContainer = document.getElementById(`candidates-${doc.id}`);
+                    candidatesSnapshot.forEach((candDoc) => {
+                        const candidate = candDoc.data();
+                        const btn = document.createElement('button');
+                        btn.textContent = candidate.name;
+                        btn.className = 'bg-blue-500 text-white font-semibold py-2 px-5 rounded-full hover:bg-blue-600 transition duration-300';
+                        btn.onclick = () => castVote(voterId, candDoc.id, doc.id, electionId);
+                        candidatesContainer.appendChild(btn);
+                    });
+                });
+            });
+        });
+
+        function castVote(voterID, candidateID, positionID, electionID) {
+            db.collection("votes").where("voterID", "==", voterID).where("positionID", "==", positionID).get().then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    alert("You have already voted for this position.");
+                    return;
+                }
+                db.collection("votes").add({
+                    voterID, candidateID, positionID, electionID, timestamp: new Date()
+                }).then(() => {
+                    alert("Vote cast successfully!");
+                }).catch((err) => {
+                    alert("Error casting vote: " + err.message);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
