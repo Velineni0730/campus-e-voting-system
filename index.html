@@ -14,26 +14,9 @@
       font-family: 'Inter', sans-serif; 
       background-color: #f8fafc;
     }
-    /* Dark mode styles */
-    html.dark body { background-color: #0f172a; }
-    html.dark .sidebar { background-color: #1e293b; border-color: #334155; }
-    html.dark .header { background-color: #1e293b; border-color: #334155; }
-    html.dark .main-content { color: #cbd5e1; }
-    html.dark .text-gray-800, html.dark .text-gray-900 { color: #e2e8f0; }
-    html.dark .text-gray-600, html.dark .text-gray-500 { color: #94a3b8; }
-    html.dark .nav-link { color: #cbd5e1; }
-    html.dark .nav-link:hover { background-color: #334155; }
-    html.dark .nav-link-active { background-color: #3b82f6; color: white; }
-    html.dark .card { background-color: #1e293b; border-color: #334155; }
-    html.dark .card:hover { border-color: #3b82f6; }
-    html.dark .card-footer { background-color: #334155; border-color: #475569; }
-    html.dark .dropdown-menu { background-color: #1e293b; border-color: #334155; }
-    html.dark .dropdown-link:hover { background-color: #334155; }
-    html.dark .dropdown-border { border-color: #334155; }
-    html.dark .stat-card { background-color: #1e293b; border-color: #334155; }
+    .nav-link-active { background-color: #1b5e20; color: white; }
     @import url('https://rsms.me/inter/inter.css');
   </style>
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -42,72 +25,60 @@
 <body>
 
 <div class="flex h-screen">
-  <aside class="w-[var(--sidebar-width)] bg-white flex flex-col flex-shrink-0 sidebar">
-    <div class="px-6 h-[var(--header-height)] flex items-center border-b border-gray-200 dropdown-border">
-      <a href="#" class="text-2xl font-bold flex items-center gap-3 text-gray-800">
-        <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  <aside class="w-[var(--sidebar-width)] bg-white flex flex-col flex-shrink-0 border-r">
+    <div class="px-6 h-[var(--header-height)] flex items-center border-b">
+      <a href="index.html" class="text-2xl font-bold flex items-center gap-3 text-gray-800">
+        <img src="images/gitamlogo.png" alt="Gitam Logo" class="h-10 w-auto object-contain">
         <span>E-Voting</span>
       </a>
     </div>
     <nav class="flex-grow p-4 space-y-2">
       <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold nav-link-active">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        Dashboard
+        Home
       </a>
-      <a href="results.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium nav-link">
+      <a href="results.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         Results
       </a>
+       <a href="voting_history.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Voting History
+      </a>
     </nav>
-    <div class="p-4 border-t border-gray-200 dropdown-border text-xs text-gray-500">
+    <div class="p-4 border-t text-xs text-gray-500">
       &copy; 2025 Campus E-Voting System
     </div>
   </aside>
 
   <div class="flex-1 flex flex-col">
-    <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b border-gray-200 flex items-center justify-end px-8 gap-4 header">
-      <button id="theme-switcher" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"></button>
+    <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b flex items-center justify-end px-8 gap-4">
       <div class="relative" id="user-profile-container"></div>
     </header>
 
-    <main class="flex-1 p-8 overflow-y-auto main-content">
+    <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
       <div class="max-w-7xl mx-auto">
         <h1 id="welcome-header" class="text-3xl font-bold text-gray-900">Welcome!</h1>
         <p class="mt-1 text-gray-600">Here's your dashboard overview for today.</p>
 
         <div id="stats-bar" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"></div>
+        
         <div class="mt-12">
             <h2 class="text-2xl font-bold text-gray-800">Active Elections</h2>
-            <div id="electionsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4"></div>
+            <div id="activeElectionsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4"></div>
         </div>
+
         <div class="mt-12">
-            <h2 class="text-2xl font-bold text-gray-800">My Voting History</h2>
-            <div id="voting-history" class="mt-4 bg-white rounded-lg border border-gray-200 shadow-sm card"></div>
+            <h2 class="text-2xl font-bold text-gray-800">Upcoming Elections</h2>
+            <div id="upcomingElectionsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4"></div>
         </div>
+
       </div>
     </main>
   </div>
 </div>
 
 <script>
-  // --- THEME SWITCHER LOGIC ---
-  const themeSwitcher = document.getElementById('theme-switcher');
-  const userTheme = localStorage.getItem('theme');
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  themeSwitcher.innerHTML = `<svg id="theme-icon-light" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
-  const themeIconLight = document.getElementById('theme-icon-light');
-  const themeIconDark = document.getElementById('theme-icon-dark');
-
-  const setTheme = (isDark) => {
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', isDark);
-    themeIconLight.classList.toggle('hidden', isDark);
-    themeIconDark.classList.toggle('hidden', !isDark);
-  };
-  themeSwitcher.addEventListener('click', () => setTheme(!document.documentElement.classList.contains('dark')));
-  setTheme(userTheme === 'dark' || (!userTheme && systemTheme));
-
-  // --- FIREBASE AUTH & DATA LOGIC ---
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       window.location.href = "login.html";
@@ -116,114 +87,144 @@
 
     const voterDoc = await db.collection('voters').doc(user.uid).get();
     const voterName = voterDoc.exists ? voterDoc.data().name : "User";
+    const admissionNumber = voterDoc.exists ? voterDoc.data().admissionNumber : "User";
     
-    // --- UPDATED INITIALS LOGIC ---
-    const nameParts = voterName.trim().split(' ');
-    let userInitials = '';
-    if (nameParts.length >= 2) {
-      userInitials = nameParts[0][0] + nameParts[1][0];
-    } else if (voterName.length >= 2) {
-      userInitials = voterName.substring(0, 2);
-    } else {
-      userInitials = voterName;
-    }
-    userInitials = userInitials.toUpperCase();
-
     document.getElementById('welcome-header').textContent = `Welcome, ${voterName}!`;
-    document.getElementById('user-profile-container').innerHTML = `
-      <button id="profileBtn" class="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">${userInitials}</button>
-      <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-20 border border-gray-200 py-1 dropdown-menu">
-        <div class="px-4 py-2 border-b border-gray-200 dropdown-border">
-          <p class="text-sm font-medium text-gray-900 truncate">${voterName}</p>
-          <p class="text-xs text-gray-500 truncate">${user.email}</p>
+    renderUserProfile(voterName, admissionNumber.toUpperCase(), user.email);
+    renderDashboardData(user.uid);
+  });
+  
+  function renderUserProfile(name, id, email) {
+    const container = document.getElementById('user-profile-container');
+    container.innerHTML = `
+      <button id="profileBtn" class="w-10 h-10 rounded-full bg-green-700 text-white font-semibold flex items-center justify-center text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">${id}</button>
+      <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border py-1">
+        <div class="px-4 py-2 border-b">
+          <p class="text-sm font-medium text-gray-900 truncate">${name}</p>
+          <p class="text-xs text-gray-500 truncate">${email}</p>
         </div>
-        <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dropdown-link">
-          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-          Settings
-        </a>
-        <a id="logoutBtn" href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dropdown-link">
+        <a id="logoutBtn" href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           Logout
         </a>
       </div>
     `;
     
-    const profileBtn = document.getElementById('profileBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    profileBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
-    document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
-    window.addEventListener('click', () => { if (!dropdownMenu.classList.contains('hidden')) dropdownMenu.classList.add('hidden'); });
+    document.getElementById('profileBtn').addEventListener('click', (e) => { 
+      e.stopPropagation();
+      document.getElementById('dropdownMenu').classList.toggle('hidden'); 
+    });
+    document.getElementById('logoutBtn').addEventListener('click', (e) => { 
+      e.preventDefault(); 
+      auth.signOut(); 
+    });
+  }
 
-    renderDashboardData(user.uid);
+  window.addEventListener('click', () => { 
+    const menu = document.getElementById('dropdownMenu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
   });
-  
-  async function renderDashboardData(userId) {
-    const electionsSnapshot = await db.collection("elections").get();
-    const votesSnapshot = await db.collection("votes").where("voterID", "==", userId).get();
-    const candidatesSnapshot = await db.collection("candidates").get();
 
-    const elections = electionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const votedElectionIds = new Set(votesSnapshot.docs.map(doc => doc.data().electionID));
+  async function renderDashboardData(userId) {
+    const [electionsSnapshot, candidatesSnapshot, votesSnapshot, positionsSnapshot] = await Promise.all([
+      db.collection("elections").get(),
+      db.collection("candidates").get(),
+      db.collection("votes").where("voterID", "==", userId).get(),
+      db.collection("positions").get()
+    ]);
+
+    const allElections = electionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allCandidates = candidatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allPositions = positionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const userVotes = votesSnapshot.docs.map(doc => doc.data());
     
-    const activeElectionsCount = elections.filter(e => new Date(e.endDate.seconds * 1000) > new Date()).length;
+    const now = new Date();
+    const activeElections = allElections.filter(e => new Date(e.startDate.seconds * 1000) <= now && new Date(e.endDate.seconds * 1000) > now);
+    const upcomingElections = allElections.filter(e => new Date(e.startDate.seconds * 1000) > now);
+    const votedElectionIds = new Set(userVotes.map(vote => vote.electionID));
+
+    let progressText = "No active elections";
+    if (activeElections.length === 1) {
+        const activeElectionId = activeElections[0].id;
+        const positionsInActiveElection = allPositions.filter(p => p.electionId === activeElectionId).length;
+        const votesInActiveElection = userVotes.filter(v => v.electionID === activeElectionId).length;
+        progressText = `${votesInActiveElection} of ${positionsInActiveElection} Voted`;
+    } else if (activeElections.length > 1) {
+        progressText = `Voted in ${votedElectionIds.size} elections`;
+    }
+    
+    const activeElectionIds = activeElections.map(e => e.id);
+    const activeCandidatesCount = allCandidates.filter(c => activeElectionIds.includes(c.electionId)).length;
+
     document.getElementById('stats-bar').innerHTML = `
-        <div class="p-5 bg-white rounded-lg border border-gray-200 shadow-sm stat-card"><h3 class="text-sm font-medium text-gray-500">Your Voting Status</h3><p class="text-2xl font-bold text-gray-900 mt-1">${votedElectionIds.size > 0 ? 'Completed' : 'Pending'}</p></div>
-        <div class="p-5 bg-white rounded-lg border border-gray-200 shadow-sm stat-card"><h3 class="text-sm font-medium text-gray-500">Active Elections</h3><p class="text-2xl font-bold text-gray-900 mt-1">${activeElectionsCount}</p></div>
-        <div class="p-5 bg-white rounded-lg border border-gray-200 shadow-sm stat-card"><h3 class="text-sm font-medium text-gray-500">Total Candidates</h3><p class="text-2xl font-bold text-gray-900 mt-1">${candidatesSnapshot.size}</p></div>
+        <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Active Elections</h3><p class="text-2xl font-bold text-gray-900 mt-1">${activeElections.length}</p></div>
+        <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Your Voting Progress</h3><p class="text-2xl font-bold text-gray-900 mt-1">${progressText}</p></div>
+        <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Candidates (Active)</h3><p class="text-2xl font-bold text-gray-900 mt-1">${activeCandidatesCount}</p></div>
     `;
 
-    const electionsList = document.getElementById('electionsList');
-    electionsList.innerHTML = "";
-    const activeElections = elections.filter(e => new Date(e.endDate.seconds * 1000) > new Date());
+    const activeElectionsList = document.getElementById('activeElectionsList');
+    const upcomingElectionsList = document.getElementById('upcomingElectionsList');
+    activeElectionsList.innerHTML = "";
+    upcomingElectionsList.innerHTML = "";
+
     if (activeElections.length === 0) {
-        electionsList.innerHTML = "<div class='col-span-full text-center bg-white p-10 rounded-lg border border-gray-200 card'><p class='text-gray-500'>There are no active elections right now.</p></div>";
+        activeElectionsList.innerHTML = "<div class='col-span-full text-center bg-white p-10 rounded-lg border'><p class='text-gray-500'>There are no active elections right now.</p></div>";
     } else {
         activeElections.forEach(election => {
-            const startDate = new Date(election.startDate.seconds * 1000);
-            const endDate = new Date(election.endDate.seconds * 1000);
-            const now = new Date();
-            const progress = Math.max(0, Math.min(100, (now - startDate) / (endDate - startDate) * 100));
             const hasVoted = votedElectionIds.has(election.id);
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col transition-all hover:shadow-xl hover:border-blue-500 hover:-translate-y-1 card';
-            card.innerHTML = `
-                <div class="p-6 flex-grow">
-                    <div class="flex justify-between items-start"><h3 class="text-lg font-bold text-gray-900">${election.title}</h3><span class="text-xs font-semibold px-2 py-1 rounded-full ${hasVoted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${hasVoted ? 'Voted' : 'Pending'}</span></div>
-                    <div class="mt-4 text-sm text-gray-600 space-y-2"><p><strong>Ends:</strong> ${endDate.toLocaleString()}</p></div>
-                    <div class="mt-4"><div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700"><div class="bg-blue-600 h-2 rounded-full" style="width: ${progress}%"></div></div></div>
-                </div>
-                <div class="p-4 bg-gray-50 border-t card-footer dropdown-border">
-                    <button ${hasVoted ? 'disabled' : ''} onclick="selectElection('${election.id}')" class="w-full font-semibold py-2.5 px-4 rounded-md transition duration-300 ${hasVoted ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'}">
-                        ${hasVoted ? 'View Results' : 'Go to Vote'}
-                    </button>
-                </div>`;
-            electionsList.appendChild(card);
+            activeElectionsList.innerHTML += createElectionCard(election, 'active', hasVoted);
         });
     }
 
-    const votingHistory = document.getElementById('voting-history');
-    votingHistory.innerHTML = "";
-    const votedElections = elections.filter(e => votedElectionIds.has(e.id));
-    if (votedElections.length === 0) {
-        votingHistory.innerHTML = "<p class='p-6 text-center text-gray-500'>You haven't voted in any elections yet.</p>";
+    if (upcomingElections.length === 0) {
+        upcomingElectionsList.innerHTML = "<div class='col-span-full text-center bg-white p-10 rounded-lg border'><p class='text-gray-500'>There are no upcoming elections scheduled.</p></div>";
     } else {
-        votedElections.forEach(election => {
-            const item = document.createElement('div');
-            item.className = 'px-6 py-4 flex justify-between items-center border-b dropdown-border last:border-b-0';
-            item.innerHTML = `<div><p class="font-semibold text-gray-800">${election.title}</p><p class="text-sm text-gray-500">Completed on ${new Date(election.endDate.seconds * 1000).toLocaleDateString()}</p></div><button onclick="viewResults('${election.id}')" class="text-sm font-medium text-blue-600 hover:underline">View Results</button>`;
-            votingHistory.appendChild(item);
+        upcomingElections.forEach(election => {
+            upcomingElectionsList.innerHTML += createElectionCard(election, 'upcoming');
         });
     }
+  }
+
+  function createElectionCard(election, status, hasVoted = false) {
+    const startDate = new Date(election.startDate.seconds * 1000);
+    const endDate = new Date(election.endDate.seconds * 1000);
+    
+    let statusBadge, buttonHTML;
+    if (status === 'active') {
+        statusBadge = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-800">Active</span>`;
+        buttonHTML = `<button onclick="selectElection('${election.id}')" class="w-full font-semibold py-2.5 px-4 rounded-md transition bg-green-900 text-white hover:bg-green-800">
+                        ${hasVoted ? 'Continue / View Results' : 'Go to Vote'}
+                      </button>`;
+    } else if (status === 'upcoming') {
+        statusBadge = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-800">Upcoming</span>`;
+        buttonHTML = `<button disabled class="w-full font-semibold py-2.5 px-4 rounded-md bg-gray-300 text-gray-500 cursor-not-allowed">
+                        Voting Has Not Started
+                      </button>`;
+    }
+
+    return `
+        <div class="bg-white rounded-lg border shadow-sm flex flex-col transition hover:shadow-xl hover:-translate-y-1">
+            <div class="p-6 flex-grow">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-lg font-bold text-gray-900">${election.title}</h3>
+                    ${statusBadge}
+                </div>
+                <div class="mt-4 text-sm text-gray-600 space-y-2">
+                    <p><strong>Starts:</strong> ${startDate.toLocaleString()}</p>
+                    <p><strong>Ends:</strong> ${endDate.toLocaleString()}</p>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 border-t">
+                ${buttonHTML}
+            </div>
+        </div>`;
   }
 
   function selectElection(electionId) {
     localStorage.setItem("selectedElectionId", electionId);
     window.location.href = "vote.html";
-  }
-  
-  function viewResults(electionId) {
-    localStorage.setItem("selectedElectionId", electionId);
-    window.location.href = "results.html";
   }
 </script>
 

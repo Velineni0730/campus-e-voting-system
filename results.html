@@ -1,59 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Election Results - E-Voting System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="js/auth.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Election Results - Campus E-Voting</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { 
+      --sidebar-width: 260px; 
+      --header-height: 80px;
+      --gitam-green: #00695c;
+    }
+    body { font-family: 'Inter', sans-serif; }
+    .nav-link-active { background-color: var(--gitam-green); color: white; }
+    .nav-link:not(.nav-link-active):hover { background-color: #f0fdf4; }
+    .card-header-bg { background: linear-gradient(to right, var(--gitam-green), #004d40); }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/auth.js"></script>
 </head>
-<body class="bg-gray-50">
-    <header class="bg-white shadow-sm">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-2xl font-bold text-gray-800">E-Voting</a>
-            <a href="index.html" class="text-blue-600 hover:underline">Back to Elections</a>
-        </nav>
+<body>
+<div class="flex h-screen">
+  <aside class="w-[var(--sidebar-width)] bg-white flex flex-col flex-shrink-0 border-r">
+    <div class="px-6 h-[var(--header-height)] flex items-center border-b">
+      <a href="index.html" class="text-2xl font-bold flex items-center gap-3 text-gray-800">
+        <img src="images/gitamlogo.png" alt="Gitam Logo" class="h-10 w-auto object-contain">
+        <span>E-Voting</span>
+      </a>
+    </div>
+    <nav class="flex-grow p-4 space-y-2">
+      <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        Home
+      </a>
+      <a href="results.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold nav-link-active">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        Results
+      </a>
+       <a href="voting_history.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Voting History
+      </a>
+    </nav>
+    <div class="p-4 border-t text-xs text-gray-500">
+      &copy; 2025 Campus E-Voting System
+    </div>
+  </aside>
+
+  <div class="flex-1 flex flex-col">
+    <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b flex items-center justify-between px-8 gap-4">
+        <h1 id="election-title" class="text-2xl font-bold text-gray-900">Election Results</h1>
+        <div class="relative" id="user-profile-container"></div>
     </header>
-
-    <main class="container mx-auto px-6 py-12">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-10">Election Results</h1>
-        <div id="results" class="space-y-8">
-            </div>
+    <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
+      <div id="resultsList" class="max-w-4xl mx-auto space-y-10"></div>
     </main>
+  </div>
+</div>
 
-    <script>
-        const resultsDiv = document.getElementById('results');
-        const electionId = localStorage.getItem("selectedElectionId");
+<script>
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { window.location.href = "login.html"; return; }
 
-        db.collection("positions").where("electionID", "==", electionId).get().then(positionsSnap => {
-            if (positionsSnap.empty) {
-                resultsDiv.innerHTML = "<p class='text-center text-gray-600'>No results available for this election yet.</p>";
-            }
-            positionsSnap.forEach(positionDoc => {
-                const position = positionDoc.data();
-                const positionDiv = document.createElement('div');
-                positionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
-                positionDiv.innerHTML = `<h3 class="text-2xl font-bold text-gray-800 mb-4">${position.title}</h3><div id="candidates-results-${positionDoc.id}" class="space-y-3"></div>`;
-                resultsDiv.appendChild(positionDiv);
+    const voterDoc = await db.collection('voters').doc(user.uid).get();
+    const voterName = voterDoc.exists ? voterDoc.data().name : "User";
+    const admissionNumber = voterDoc.exists ? voterDoc.data().admissionNumber : "User";
+    renderUserProfile(voterName, admissionNumber.toUpperCase(), user.email);
+    displayResults();
+  });
 
-                db.collection("candidates").where("positionID", "==", positionDoc.id).get().then(candidatesSnap => {
-                    const candidatesResultsContainer = document.getElementById(`candidates-results-${positionDoc.id}`);
-                    candidatesSnap.forEach(candidateDoc => {
-                        const candidate = candidateDoc.data();
-                        db.collection("votes").where("candidateID", "==", candidateDoc.id).get().then(votesSnap => {
-                            const voteCount = votesSnap.size;
-                            const p = document.createElement('p');
-                            p.className = 'text-gray-700 flex justify-between items-center';
-                            p.innerHTML = `<span>${candidate.name}</span><span class="font-bold text-blue-600">${voteCount} votes</span>`;
-                            candidatesResultsContainer.appendChild(p);
-                        });
-                    });
-                });
+  function renderUserProfile(name, id, email) {
+    const container = document.getElementById('user-profile-container');
+    container.innerHTML = `
+      <button id="profileBtn" class="w-10 h-10 rounded-full bg-green-700 text-white font-semibold flex items-center justify-center text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">${id}</button>
+      <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border py-1">
+        <div class="px-4 py-2 border-b">
+          <p class="text-sm font-medium text-gray-900 truncate">${name}</p>
+          <p class="text-xs text-gray-500 truncate">${email}</p>
+        </div>
+        <a id="logoutBtn" href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          Logout
+        </a>
+      </div>
+    `;
+    
+    document.getElementById('profileBtn').addEventListener('click', (e) => { 
+      e.stopPropagation();
+      document.getElementById('dropdownMenu').classList.toggle('hidden'); 
+    });
+    document.getElementById('logoutBtn').addEventListener('click', (e) => { 
+      e.preventDefault(); 
+      auth.signOut(); 
+    });
+  }
+
+  window.addEventListener('click', () => { 
+    const menu = document.getElementById('dropdownMenu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
+  });
+
+  async function displayResults() {
+    const resultsDiv = document.getElementById('resultsList');
+    const electionId = localStorage.getItem("selectedElectionId");
+
+    if (!electionId) {
+        resultsDiv.innerHTML = `<p class='text-center text-red-500'>No election selected. <a href="index.html" class="underline">Go back to dashboard.</a></p>`;
+        return;
+    }
+
+    const electionDoc = await db.collection('elections').doc(electionId).get();
+    if (electionDoc.exists) {
+      document.getElementById('election-title').textContent = `${electionDoc.data().title} - Results`;
+    }
+    
+    const [positionsSnap, candidatesSnap, votesSnap] = await Promise.all([
+      db.collection("positions").where("electionId", "==", electionId).get(),
+      db.collection("candidates").where("electionId", "==", electionId).get(),
+      db.collection("votes").where("electionID", "==", electionId).get()
+    ]);
+    
+    if (positionsSnap.empty) {
+        resultsDiv.innerHTML = "<p class='text-center text-gray-500'>Results are not yet available for this election.</p>";
+        return;
+    }
+
+    const allCandidates = candidatesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const voteCounts = {};
+    votesSnap.forEach(voteDoc => {
+        const candidateID = voteDoc.data().candidateID;
+        voteCounts[candidateID] = (voteCounts[candidateID] || 0) + 1;
+    });
+
+    resultsDiv.innerHTML = '';
+    for (const positionDoc of positionsSnap.docs) {
+        const position = positionDoc.data();
+        const positionId = positionDoc.id;
+        const positionDiv = document.createElement('div');
+        positionDiv.className = 'bg-white rounded-xl border shadow-lg overflow-hidden';
+        
+        let resultsHTML = `<div class="p-5 card-header-bg"><h3 class="text-2xl font-bold text-white">${position.title}</h3></div><div class="p-6 space-y-5">`;
+        
+        const candidatesForPosition = allCandidates.filter(c => c.positionId === positionId);
+        let totalVotesInPosition = 0;
+        const candidateResults = [];
+
+        if (candidatesForPosition.length === 0) {
+            resultsHTML += `<p class="text-gray-500">No candidates were found for this position.</p>`;
+        } else {
+            candidatesForPosition.forEach(candidate => {
+                const count = voteCounts[candidate.id] || 0;
+                totalVotesInPosition += count;
+                candidateResults.push({ name: candidate.name, count: count });
             });
-        });
-    </script>
+
+            const winnerCount = Math.max(...candidateResults.map(c => c.count), 0);
+            
+            candidateResults.sort((a, b) => b.count - a.count).forEach(candidate => {
+                const percentage = totalVotesInPosition > 0 ? ((candidate.count / totalVotesInPosition) * 100).toFixed(1) : 0;
+                const isWinner = candidate.count === winnerCount && winnerCount > 0;
+                
+                resultsHTML += `
+                  <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                      <span class="font-bold text-lg text-gray-800 flex items-center">
+                        ${candidate.name} ${isWinner ? '<span class="ml-2 text-xs font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">WINNER</span>' : ''}
+                      </span>
+                      <span class="text-sm font-semibold text-gray-600">${candidate.count} Votes</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4">
+                      <div class="bg-[var(--gitam-green)] h-full rounded-full flex items-center justify-center" style="width: ${percentage}%">
+                          <span class="text-xs font-bold text-white">${percentage}%</span>
+                      </div>
+                    </div>
+                  </div>
+                `;
+            });
+        }
+        
+        resultsHTML += `</div><div class="p-4 bg-gray-50 border-t text-center text-sm font-semibold text-gray-700">Total Votes Cast: ${totalVotesInPosition}</div>`;
+        positionDiv.innerHTML = resultsHTML;
+        resultsDiv.appendChild(positionDiv);
+    }
+  }
+</script>
 </body>
 </html>

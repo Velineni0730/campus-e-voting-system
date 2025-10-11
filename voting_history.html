@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cast Your Vote - Campus E-Voting</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting History - Campus E-Voting</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root { 
@@ -12,13 +12,8 @@
       --gitam-green: #00695c;
     }
     body { font-family: 'Inter', sans-serif; }
-    .nav-link:hover { background-color: #f0fdf4; }
-    .candidate-button:not(:disabled):hover {
-        border-color: var(--gitam-green);
-        background-color: #f0fdf4;
-        transform: translateY(-2px);
-    }
-    .card-header-bg { background: linear-gradient(to right, var(--gitam-green), #004d40); }
+    .nav-link-active { background-color: var(--gitam-green); color: white; }
+    .nav-link:not(.nav-link-active):hover { background-color: #f0fdf4; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -43,7 +38,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         Results
       </a>
-       <a href="voting_history.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+       <a href="voting_history.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold nav-link-active">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         Voting History
       </a>
@@ -55,11 +50,28 @@
 
   <div class="flex-1 flex flex-col">
     <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b flex items-center justify-between px-8 gap-4">
-        <h1 id="election-title" class="text-2xl font-bold text-gray-900">Cast Your Vote</h1>
+        <h1 class="text-2xl font-bold text-gray-900">My Voting History</h1>
         <div class="relative" id="user-profile-container"></div>
     </header>
     <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
-      <div id="positionsList" class="max-w-5xl mx-auto space-y-12"></div>
+      <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-lg border shadow-md overflow-hidden">
+          <table class="min-w-full divide-y">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Election</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate Voted For</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time Voted</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body" class="bg-white divide-y"></tbody>
+          </table>
+        </div>
+        <div id="no-history-message" class="hidden text-center p-10 bg-white rounded-lg border mt-4">
+            <p class="text-gray-500">You have not cast any votes yet.</p>
+        </div>
+      </div>
     </main>
   </div>
 </div>
@@ -73,78 +85,51 @@
     const admissionNumber = voterDoc.exists ? voterDoc.data().admissionNumber : "User";
     renderUserProfile(voterName, admissionNumber.toUpperCase(), user.email);
 
-    const positionsDiv = document.getElementById('positionsList');
-    const electionId = localStorage.getItem('selectedElectionId');
-    if (!electionId) {
-        positionsDiv.innerHTML = `<p class='text-center text-red-500'>No election selected. <a href="index.html" class="underline">Go back to dashboard.</a></p>`;
-        return;
-    }
-
-    const electionDoc = await db.collection('elections').doc(electionId).get();
-    if (electionDoc.exists) {
-        document.getElementById('election-title').textContent = electionDoc.data().title;
-    }
-
-    const [positionsSnapshot, candidatesSnapshot, votesSnapshot] = await Promise.all([
-      db.collection("positions").where("electionId", "==", electionId).get(),
-      db.collection("candidates").where("electionId", "==", electionId).get(),
-      db.collection('votes').where('voterID', '==', user.uid).where('electionID', '==', electionId).get()
+    const tableBody = document.getElementById('history-table-body');
+    const noHistoryMessage = document.getElementById('no-history-message');
+    
+    const [votesSnapshot, electionsSnapshot, positionsSnapshot, candidatesSnapshot] = await Promise.all([
+        db.collection("votes").where("voterID", "==", user.uid).orderBy("timestamp", "desc").get(),
+        db.collection("elections").get(),
+        db.collection("positions").get(),
+        db.collection("candidates").get()
     ]);
 
-    if (positionsSnapshot.empty) {
-        positionsDiv.innerHTML = "<p class='text-center text-gray-500'>No positions available for this election.</p>";
+    if (votesSnapshot.empty) {
+        noHistoryMessage.classList.remove('hidden');
+        document.querySelector('table').classList.add('hidden');
         return;
     }
 
-    const candidatesByPosition = {};
-    candidatesSnapshot.forEach((doc) => {
-        const candidate = { id: doc.id, ...doc.data() };
-        if (!candidatesByPosition[candidate.positionId]) {
-            candidatesByPosition[candidate.positionId] = [];
-        }
-        candidatesByPosition[candidate.positionId].push(candidate);
+    const electionsMap = new Map(electionsSnapshot.docs.map(doc => [doc.id, doc.data()]));
+    const positionsMap = new Map(positionsSnapshot.docs.map(doc => [doc.id, doc.data()]));
+    const candidatesMap = new Map(candidatesSnapshot.docs.map(doc => [doc.id, doc.data()]));
+
+    let tableHTML = '';
+    votesSnapshot.forEach(voteDoc => {
+      const voteData = voteDoc.data();
+      
+      // --- STANDARDIZED: Reading 'electionId', 'positionId', 'candidateId' ---
+      const election = electionsMap.get(voteData.electionId);
+      const position = positionsMap.get(voteData.positionId);
+      const candidate = candidatesMap.get(voteData.candidateId);
+      
+      const electionName = election ? election.title : "N/A";
+      const positionName = position ? position.title : "N/A";
+      const candidateName = candidate ? candidate.name : "N/A";
+      const voteTimestamp = voteData.timestamp ? new Date(voteData.timestamp.seconds * 1000).toLocaleString() : "N/A";
+
+      tableHTML += `
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${electionName}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${positionName}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${candidateName}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${voteTimestamp}</td>
+        </tr>
+      `;
     });
-
-    const votedPositionIds = new Set(votesSnapshot.docs.map(doc => doc.data().positionID));
-
-    positionsDiv.innerHTML = ''; 
-
-    for (const posDoc of positionsSnapshot.docs) {
-        const position = posDoc.data();
-        const positionId = posDoc.id;
-        const hasVoted = votedPositionIds.has(positionId);
-
-        const positionCard = document.createElement('div');
-        positionCard.className = 'bg-white rounded-xl border shadow-lg overflow-hidden';
-
-        let cardHTML = `
-          <div class="p-5 card-header-bg"><h3 class="text-2xl font-bold text-white">${position.title}</h3></div>
-          <div class="p-6">`;
-
-        if (hasVoted) {
-          cardHTML += `<div class="mb-4 p-3 bg-green-50 text-green-800 rounded-lg text-center font-medium border border-green-200">You have already voted for this position.</div>`;
-        }
-
-        const candidates = candidatesByPosition[positionId] || [];
-        if (candidates.length === 0) {
-          cardHTML += `<p class="text-gray-500">No candidates available for this position.</p>`;
-        } else {
-          cardHTML += `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">`;
-          candidates.forEach(candidate => {
-            const disabledAttr = hasVoted ? 'disabled' : '';
-            const onClickAttr = hasVoted ? '' : `onclick="castVote('${user.uid}', '${candidate.id}', '${positionId}', '${electionId}')"`;
-            cardHTML += `
-              <button type="button" class="candidate-button w-full text-center p-5 rounded-lg font-semibold text-lg border-2 bg-gray-50 transition shadow-sm disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500" ${disabledAttr} ${onClickAttr}>
-                ${candidate.name}
-              </button>`;
-          });
-          cardHTML += `</div>`;
-        }
-
-        cardHTML += `</div>`;
-        positionCard.innerHTML = cardHTML;
-        positionsDiv.appendChild(positionCard);
-    }
+    
+    tableBody.innerHTML = tableHTML;
   });
 
   function renderUserProfile(name, id, email) {
@@ -179,26 +164,6 @@
       menu.classList.add('hidden');
     }
   });
-
-  function castVote(voterID, candidateID, positionID, electionID) {
-    if (!confirm('Are you sure you want to cast this vote? This action cannot be undone.')) return;
-    
-    db.collection("votes").add({
-        voterID: voterID,
-        candidateID: candidateID,
-        positionID: positionID,
-        electionID: electionID,
-        timestamp: new Date()
-      })
-      .then(() => {
-        alert("Vote cast successfully!");
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.error("Error casting vote: ", err);
-        alert("An error occurred: " + err.message);
-      });
-  }
 </script>
 </body>
 </html>
