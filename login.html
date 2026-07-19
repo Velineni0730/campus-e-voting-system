@@ -4,72 +4,183 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Gitam E-Voting</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f5fdf5; }
-    .form-input, .form-button { border-radius: 8px; }
-    .form-button { background-color: #1b5e20; color: white; }
-    .form-button:hover { background-color: #2e7d32; }
-    .text-green-theme { color: #1b5e20; }
-    #error-message { color: red; }
+    body{
+      font-family:'Inter',sans-serif;
+      background-color:#f5fdf5;
+    }
+
+    #error-message{
+      color:red;
+    }
   </style>
 </head>
+
 <body>
-  <div class="flex items-center justify-center min-h-screen">
-    <div class="relative flex flex-col m-6 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
-      <div class="flex flex-col justify-center p-8 md:p-14">
-        <div class="flex items-center gap-6 mb-8">
-          <img src="images/gitamlogo.png" alt="GITAM Logo" class="w-24 h-auto">
-          <div class="flex-1">
-            <h1 class="text-3xl font-bold text-green-theme">Voter Login</h1>
-            <p class="mt-1 text-gray-600">Login with your glearn credentials</p>
-          </div>
-        </div>
-        <form id="loginForm" class="space-y-5 mt-8" autocomplete="off">
-          <div>
-            <label for="admissionNumber" class="text-sm font-medium text-gray-700">Admission Number</label>
-            <input type="text" id="admissionNumber" required class="form-input mt-1" >
-          </div>
-          <div>
-            <label for="password" class="text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" required class="form-input mt-1" autocomplete="new-password">
-          </div>
-          <button type="submit" class="form-button shadow-md hover:shadow-lg transition-shadow">Sign In</button>
-        </form>
-        <p id="error-message" class="text-sm text-center mt-4" style="display: none;"></p>
-      </div>
-      <div class="hidden md:flex md:flex-col md:justify-center md:p-8 md:bg-green-800 md:rounded-r-2xl md:shadow-inner md:w-96">
-        <div class="text-white text-center">
-          <h2 class="text-4xl font-bold text-white">Your Vote Matters.</h2>
-          <p class="mt-2 text-lg text-white">Secure & Transparent Elections.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+
+<div class="flex items-center justify-center min-h-screen">
+
+<div class="relative flex flex-col m-6 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
+
+<div class="flex flex-col justify-center p-8 md:p-14">
+
+<div class="flex items-center gap-6 mb-8">
+
+<img src="images/gitamLogo.png"
+alt="GITAM Logo"
+class="w-24 h-auto">
+
+<div class="flex-1">
+
+<h1 class="text-3xl font-bold text-green-900">
+Voter Login
+</h1>
+
+<p class="mt-1 text-gray-600">
+Login with your glearn credentials
+</p>
+
+</div>
+
+</div>
+
+<form
+id="loginForm"
+class="space-y-5 mt-8"
+autocomplete="off">
+
+<div>
+
+<label
+for="admissionNumber"
+class="text-sm font-medium text-gray-700">
+
+Admission Number
+
+</label>
+
+<input
+type="text"
+id="admissionNumber"
+required
+class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600 transition">
+
+</div>
+
+<div>
+
+<label
+for="password"
+class="text-sm font-medium text-gray-700">
+
+Password
+
+</label>
+
+<input
+type="password"
+id="password"
+required
+autocomplete="new-password"
+class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600 transition">
+
+</div>
+
+<div class="flex justify-end">
+
+<button
+type="button"
+id="forgotPasswordBtn"
+class="text-sm text-green-700 hover:text-green-900 hover:underline">
+
+Forgot Password?
+
+</button>
+
+</div>
+
+<button
+type="submit"
+class="w-full rounded-lg bg-green-800 text-white font-semibold py-3 shadow-md hover:bg-green-900 hover:shadow-lg transition-all duration-200">
+
+Sign In
+
+</button>
+
+</form>
+
+<p
+id="error-message"
+class="text-sm text-center mt-4"
+style="display:none;"></p>
+
+</div>
+
+<div class="hidden md:flex md:flex-col md:justify-center md:p-8 md:bg-green-800 md:rounded-r-2xl md:shadow-inner md:w-96">
+
+<div class="text-white text-center">
+
+<h2 class="text-4xl font-bold">
+Your Vote Matters.
+</h2>
+
+<p class="mt-2 text-lg">
+Secure & Transparent Elections.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <script src="js/auth.js"></script>
+
   <script>
     const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('error-message');
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       errorMessage.style.display = 'none';
-      const admissionNumber = document.getElementById('admissionNumber').value.trim();
-      const password = document.getElementById('password').value;
+
+      const admissionNumber = document
+        .getElementById('admissionNumber')
+        .value
+        .trim();
+
+      const password = document
+        .getElementById('password')
+        .value;
+
       const email = admissionNumber + '@gitam.in';
+
       try {
+
         await auth.signInWithEmailAndPassword(email, password);
+
         window.location.href = 'index.html';
+
       } catch (err) {
-        errorMessage.textContent = 'Login failed: Invalid admission number or password.';
+
+        errorMessage.textContent =
+          'Login failed: Invalid admission number or password.';
+
         errorMessage.style.display = 'block';
+
       }
     });
   </script>
+
 </body>
 </html>

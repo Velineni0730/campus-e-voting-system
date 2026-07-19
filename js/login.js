@@ -42,3 +42,44 @@ googleLoginBtn.addEventListener('click', async () => {
     errorMsg.textContent = "Google login failed: " + err.message;
   }
 });
+
+const resetModal = document.getElementById("resetModal");
+
+document.getElementById("forgotPasswordBtn").onclick = () => {
+    resetModal.classList.remove("hidden");
+    resetModal.classList.add("flex");
+};
+
+document.getElementById("cancelReset").onclick = () => {
+    resetModal.classList.add("hidden");
+    resetModal.classList.remove("flex");
+};
+
+document.getElementById("sendReset").onclick = async () => {
+
+    const admission =
+        document.getElementById("resetAdmission").value.trim();
+
+    if (!admission) {
+        alert("Enter Admission Number");
+        return;
+    }
+
+    const email = admission + "@gitam.in";
+
+    try {
+
+        await auth.sendPasswordResetEmail(email);
+
+        alert("Password reset email sent.");
+
+        resetModal.classList.add("hidden");
+        resetModal.classList.remove("flex");
+
+    } catch (err) {
+
+        alert(err.message);
+
+    }
+
+};
