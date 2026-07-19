@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Campus E-Voting</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root { 
-      --sidebar-width: 260px; 
+    :root {
+      --sidebar-width: 260px;
       --header-height: 80px;
     }
-    body { 
-      font-family: 'Inter', sans-serif; 
+
+    body {
+      font-family: 'Inter', sans-serif;
       background-color: #f8fafc;
     }
-    .nav-link-active { background-color: #1b5e20; color: white; }
+
+    .nav-link-active {
+      background-color: #1b5e20;
+      color: white;
+    }
+
     @import url('https://rsms.me/inter/inter.css');
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -22,81 +29,93 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="js/auth.js"></script>
 </head>
+
 <body>
 
-<div class="flex h-screen">
-  <aside class="w-[var(--sidebar-width)] bg-white flex flex-col flex-shrink-0 border-r">
-    <div class="px-6 h-[var(--header-height)] flex items-center border-b">
-      <a href="index.html" class="text-2xl font-bold flex items-center gap-3 text-gray-800">
-        <img src="images/gitamLogo.png" alt="Gitam Logo" class="h-10 w-auto object-contain">
-        <span>E-Voting</span>
-      </a>
-    </div>
-    <nav class="flex-grow p-4 space-y-2">
-      <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold nav-link-active">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        Home
-      </a>
-      <a href="results.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-        Results
-      </a>
-       <a href="voting_history.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        Voting History
-      </a>
-    </nav>
-    <div class="p-4 border-t text-xs text-gray-500">
-      &copy; 2025 Campus E-Voting System
-    </div>
-  </aside>
+  <div class="flex h-screen">
+    <aside class="w-[var(--sidebar-width)] bg-white flex flex-col flex-shrink-0 border-r">
+      <div class="px-6 h-[var(--header-height)] flex items-center border-b">
+        <a href="index.html" class="text-2xl font-bold flex items-center gap-3 text-gray-800">
+          <img src="images/gitamLogo.png" alt="Gitam Logo" class="h-10 w-auto object-contain">
+          <span>E-Voting</span>
+        </a>
+      </div>
+      <nav class="flex-grow p-4 space-y-2">
+        <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-semibold nav-link-active">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          Home
+        </a>
+        <a href="results.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+            </path>
+          </svg>
+          Results
+        </a>
+        <a href="voting_history.html"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Voting History
+        </a>
+      </nav>
+      <div class="p-4 border-t text-xs text-gray-500">
+        &copy; 2025 Campus E-Voting System
+      </div>
+    </aside>
 
-  <div class="flex-1 flex flex-col">
-    <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b flex items-center justify-end px-8 gap-4">
-      <div class="relative" id="user-profile-container"></div>
-    </header>
+    <div class="flex-1 flex flex-col">
+      <header class="flex-shrink-0 bg-white h-[var(--header-height)] border-b flex items-center justify-end px-8 gap-4">
+        <div class="relative" id="user-profile-container"></div>
+      </header>
 
-    <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
-      <div class="max-w-7xl mx-auto">
-        <h1 id="welcome-header" class="text-3xl font-bold text-gray-900">Welcome!</h1>
-        <p class="mt-1 text-gray-600">Here's your dashboard overview for today.</p>
+      <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+          <h1 id="welcome-header" class="text-3xl font-bold text-gray-900">Welcome!</h1>
+          <p class="mt-1 text-gray-600">Here's your dashboard overview for today.</p>
 
-        <div id="stats-bar" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"></div>
-        
-        <div class="mt-12">
+          <div id="stats-bar" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"></div>
+
+          <div class="mt-12">
             <h2 class="text-2xl font-bold text-gray-800">Active Elections</h2>
             <div id="activeElectionsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4"></div>
-        </div>
+          </div>
 
-        <div class="mt-12">
+          <div class="mt-12">
             <h2 class="text-2xl font-bold text-gray-800">Upcoming Elections</h2>
             <div id="upcomingElectionsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4"></div>
+          </div>
+
         </div>
-
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
-</div>
 
-<script>
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+  <script>
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-    const voterDoc = await db.collection('voters').doc(user.uid).get();
-    const voterName = voterDoc.exists ? voterDoc.data().name : "User";
-    const admissionNumber = voterDoc.exists ? voterDoc.data().admissionNumber : "User";
-    
-    document.getElementById('welcome-header').textContent = `Welcome, ${voterName}!`;
-    renderUserProfile(voterName, admissionNumber.toUpperCase(), user.email);
-    renderDashboardData(user.uid);
-  });
-  
-  function renderUserProfile(name, id, email) {
-    const container = document.getElementById('user-profile-container');
-    container.innerHTML = `
+      const voterDoc = await db.collection('voters').doc(user.uid).get();
+      const voterName = voterDoc.exists ? voterDoc.data().name : "User";
+      const admissionNumber = voterDoc.exists ? voterDoc.data().admissionNumber : "User";
+
+      document.getElementById('welcome-header').textContent = `Welcome, ${voterName}!`;
+      renderUserProfile(voterName, admissionNumber.toUpperCase(), user.email);
+      renderDashboardData(user.uid);
+    });
+
+    function renderUserProfile(name, id, email) {
+      const container = document.getElementById('user-profile-container');
+      container.innerHTML = `
       <button id="profileBtn" class="w-10 h-10 rounded-full bg-green-700 text-white font-semibold flex items-center justify-center text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">${id}</button>
       <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 border py-1">
         <div class="px-4 py-2 border-b">
@@ -109,102 +128,126 @@
         </a>
       </div>
     `;
-    
-    document.getElementById('profileBtn').addEventListener('click', (e) => { 
-      e.stopPropagation();
-      document.getElementById('dropdownMenu').classList.toggle('hidden'); 
-    });
-    document.getElementById('logoutBtn').addEventListener('click', (e) => { 
-      e.preventDefault(); 
-      auth.signOut(); 
-    });
-  }
 
-  window.addEventListener('click', () => { 
-    const menu = document.getElementById('dropdownMenu');
-    if (menu && !menu.classList.contains('hidden')) {
-      menu.classList.add('hidden');
+      document.getElementById('profileBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('dropdownMenu').classList.toggle('hidden');
+      });
+      document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut();
+      });
     }
-  });
 
-  async function renderDashboardData(userId) {
-    const [electionsSnapshot, candidatesSnapshot, votesSnapshot, positionsSnapshot] = await Promise.all([
-      db.collection("elections").get(),
-      db.collection("candidates").get(),
-      db.collection("votes").where("voterID", "==", userId).get(),
-      db.collection("positions").get()
-    ]);
+    window.addEventListener('click', () => {
+      const menu = document.getElementById('dropdownMenu');
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
 
-    const allElections = electionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const allCandidates = candidatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const allPositions = positionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const userVotes = votesSnapshot.docs.map(doc => doc.data());
-    
-    const now = new Date();
-    const activeElections = allElections.filter(e => new Date(e.startDate.seconds * 1000) <= now && new Date(e.endDate.seconds * 1000) > now);
-    const upcomingElections = allElections.filter(e => new Date(e.startDate.seconds * 1000) > now);
-    const votedElectionIds = new Set(userVotes.map(vote => vote.electionID));
+    async function renderDashboardData(userId) {
+      const [electionsSnapshot, candidatesSnapshot, votesSnapshot, positionsSnapshot] = await Promise.all([
+        db.collection("elections").get(),
+        db.collection("candidates").get(),
+        db.collection("votes").where("voterID", "==", userId).get(),
+        db.collection("positions").get()
+      ]);
 
-    let progressText = "No active elections";
-    if (activeElections.length === 1) {
+      const allElections = electionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("All Elections:", allElections);
+
+      console.log("Current Time:", now);
+
+      allElections.forEach(e => {
+        console.log(
+          e.title,
+          e.startDate?.toDate?.(),
+          e.endDate?.toDate?.(),
+          e.status
+        );
+      });
+
+      const allCandidates = candidatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const allPositions = positionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const userVotes = votesSnapshot.docs.map(doc => doc.data());
+
+      const now = new Date();
+      const activeElections = allElections.filter(e =>
+
+        e.startDate.toDate() <= now &&
+
+        e.endDate.toDate() > now
+
+      );
+      const upcomingElections = allElections.filter(e =>
+
+        e.startDate.toDate() > now
+
+      );
+
+      const votedElectionIds = new Set(userVotes.map(vote => vote.electionID));
+
+      let progressText = "No active elections";
+      if (activeElections.length === 1) {
         const activeElectionId = activeElections[0].id;
         const positionsInActiveElection = allPositions.filter(p => p.electionId === activeElectionId).length;
         const votesInActiveElection = userVotes.filter(v => v.electionID === activeElectionId).length;
         progressText = `${votesInActiveElection} of ${positionsInActiveElection} Voted`;
-    } else if (activeElections.length > 1) {
+      } else if (activeElections.length > 1) {
         progressText = `Voted in ${votedElectionIds.size} elections`;
-    }
-    
-    const activeElectionIds = activeElections.map(e => e.id);
-    const activeCandidatesCount = allCandidates.filter(c => activeElectionIds.includes(c.electionId)).length;
+      }
 
-    document.getElementById('stats-bar').innerHTML = `
+      const activeElectionIds = activeElections.map(e => e.id);
+      const activeCandidatesCount = allCandidates.filter(c => activeElectionIds.includes(c.electionId)).length;
+
+      document.getElementById('stats-bar').innerHTML = `
         <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Active Elections</h3><p class="text-2xl font-bold text-gray-900 mt-1">${activeElections.length}</p></div>
         <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Your Voting Progress</h3><p class="text-2xl font-bold text-gray-900 mt-1">${progressText}</p></div>
         <div class="p-5 bg-white rounded-lg border shadow-sm"><h3 class="text-sm font-medium text-gray-500">Candidates (Active)</h3><p class="text-2xl font-bold text-gray-900 mt-1">${activeCandidatesCount}</p></div>
     `;
 
-    const activeElectionsList = document.getElementById('activeElectionsList');
-    const upcomingElectionsList = document.getElementById('upcomingElectionsList');
-    activeElectionsList.innerHTML = "";
-    upcomingElectionsList.innerHTML = "";
+      const activeElectionsList = document.getElementById('activeElectionsList');
+      const upcomingElectionsList = document.getElementById('upcomingElectionsList');
+      activeElectionsList.innerHTML = "";
+      upcomingElectionsList.innerHTML = "";
 
-    if (activeElections.length === 0) {
+      if (activeElections.length === 0) {
         activeElectionsList.innerHTML = "<div class='col-span-full text-center bg-white p-10 rounded-lg border'><p class='text-gray-500'>There are no active elections right now.</p></div>";
-    } else {
+      } else {
         activeElections.forEach(election => {
-            const hasVoted = votedElectionIds.has(election.id);
-            activeElectionsList.innerHTML += createElectionCard(election, 'active', hasVoted);
+          const hasVoted = votedElectionIds.has(election.id);
+          activeElectionsList.innerHTML += createElectionCard(election, 'active', hasVoted);
         });
-    }
+      }
 
-    if (upcomingElections.length === 0) {
+      if (upcomingElections.length === 0) {
         upcomingElectionsList.innerHTML = "<div class='col-span-full text-center bg-white p-10 rounded-lg border'><p class='text-gray-500'>There are no upcoming elections scheduled.</p></div>";
-    } else {
+      } else {
         upcomingElections.forEach(election => {
-            upcomingElectionsList.innerHTML += createElectionCard(election, 'upcoming');
+          upcomingElectionsList.innerHTML += createElectionCard(election, 'upcoming');
         });
+      }
     }
-  }
 
-  function createElectionCard(election, status, hasVoted = false) {
-    const startDate = new Date(election.startDate.seconds * 1000);
-    const endDate = new Date(election.endDate.seconds * 1000);
-    
-    let statusBadge, buttonHTML;
-    if (status === 'active') {
+    function createElectionCard(election, status, hasVoted = false) {
+      const startDate = new Date(election.startDate.seconds * 1000);
+      const endDate = new Date(election.endDate.seconds * 1000);
+
+      let statusBadge, buttonHTML;
+      if (status === 'active') {
         statusBadge = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-800">Active</span>`;
         buttonHTML = `<button onclick="selectElection('${election.id}')" class="w-full font-semibold py-2.5 px-4 rounded-md transition bg-green-900 text-white hover:bg-green-800">
                         ${hasVoted ? 'Continue / View Results' : 'Go to Vote'}
                       </button>`;
-    } else if (status === 'upcoming') {
+      } else if (status === 'upcoming') {
         statusBadge = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-800">Upcoming</span>`;
         buttonHTML = `<button disabled class="w-full font-semibold py-2.5 px-4 rounded-md bg-gray-300 text-gray-500 cursor-not-allowed">
                         Voting Has Not Started
                       </button>`;
-    }
+      }
 
-    return `
+      return `
         <div class="bg-white rounded-lg border shadow-sm flex flex-col transition hover:shadow-xl hover:-translate-y-1">
             <div class="p-6 flex-grow">
                 <div class="flex justify-between items-start">
@@ -220,13 +263,14 @@
                 ${buttonHTML}
             </div>
         </div>`;
-  }
+    }
 
-  function selectElection(electionId) {
-    localStorage.setItem("selectedElectionId", electionId);
-    window.location.href = "vote.html";
-  }
-</script>
+    function selectElection(electionId) {
+      localStorage.setItem("selectedElectionId", electionId);
+      window.location.href = "vote.html";
+    }
+  </script>
 
 </body>
+
 </html>
