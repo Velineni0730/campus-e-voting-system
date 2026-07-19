@@ -157,8 +157,6 @@
       const allElections = electionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       console.log("All Elections:", allElections);
 
-      console.log("Current Time:", now);
-
       allElections.forEach(e => {
         console.log(
           e.title,
@@ -173,18 +171,14 @@
       const userVotes = votesSnapshot.docs.map(doc => doc.data());
 
       const now = new Date();
-      const activeElections = allElections.filter(e =>
+      console.log("Current Time:", now);
+      const activeElections = allElections.filter(
+    e => e.status === "ongoing"
+);
 
-        e.startDate.toDate() <= now &&
-
-        e.endDate.toDate() > now
-
-      );
-      const upcomingElections = allElections.filter(e =>
-
-        e.startDate.toDate() > now
-
-      );
+const upcomingElections = allElections.filter(
+    e => e.status === "upcoming"
+);
 
       const votedElectionIds = new Set(userVotes.map(vote => vote.electionID));
 
